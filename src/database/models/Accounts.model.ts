@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import { Status } from 'src/constants/metadata';
 
 @Schema({
   timestamps: true,
@@ -27,6 +28,9 @@ export class Accounts {
 
   @Prop()
   dateOfBirth: Date;
+
+  @Prop({ default: Status.FREE, enum: Status })
+  status: Status;
 }
 
 export type AccountDocument = Accounts & Document;
