@@ -1,7 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDefined, IsEmail, IsString } from 'class-validator';
-import { TransformToLowercase } from 'src/decorators/transformers';
-import { IsCustomStrongPassword } from './IsCustomStrongPassword';
+import {
+  IsDefined,
+  IsEmail,
+  IsString,
+  IsStrongPassword,
+} from 'class-validator';
 
 export class RegisterDto {
   @ApiProperty({
@@ -24,8 +27,9 @@ export class RegisterDto {
 
   @ApiProperty({
     required: true,
+    example: 'P@ssw07d',
   })
-  @IsCustomStrongPassword()
+  @IsStrongPassword()
   password: string;
 
   @ApiProperty({
@@ -41,6 +45,5 @@ export class RegisterDto {
   })
   @IsDefined()
   @IsString()
-  @TransformToLowercase()
   username: string;
 }

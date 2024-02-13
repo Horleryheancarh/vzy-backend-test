@@ -4,19 +4,14 @@ import {
   IsOptional,
   IsString,
   Length,
-  IsArray,
-  IsUrl,
-  ArrayMinSize,
   IsMobilePhone,
 } from 'class-validator';
-import { TransformToLowercase } from 'src/decorators/transformers';
 
 export class UpdateProfileDto {
   @ApiProperty()
   @IsString()
   @IsOptional()
   @Length(3)
-  @TransformToLowercase()
   username: string;
 
   @ApiProperty()
@@ -38,37 +33,6 @@ export class UpdateProfileDto {
 
   @ApiProperty()
   @IsOptional()
-  @IsUrl()
-  avatarUrl: string;
-  
-  @ApiProperty()
-  @IsOptional()
-  @IsUrl()
-  coverImageUrl: string;
-
-  @ApiProperty()
-  @IsOptional()
   @IsDate()
   dateOfBirth: Date;
-
-  @ApiProperty()
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  @ArrayMinSize(1)
-  interests: string[];
-
-  @ApiProperty()
-  @IsString()
-  @IsOptional()
-  bio: string;
-
-  @ApiProperty()
-  @IsOptional()
-  website: string;
-
-  @ApiProperty()
-  @IsOptional()
-  @IsString()
-  location: string;
 }
