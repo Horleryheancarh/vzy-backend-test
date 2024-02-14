@@ -10,7 +10,8 @@ import { RegisterDto } from './dtos/RegisterDto';
 import * as bcrypt from 'bcryptjs';
 import { LoginDto } from './dtos/LoginDto';
 import { JwtService } from '@nestjs/jwt';
-import { JWT_SECRET } from 'src/config';
+import { JWT_SECRET, JWT_REFRESH_SECRET } from 'src/config';
+import { RefreshTokenDto } from './dtos/RefreshTokenDto';
 
 @Injectable()
 export class AuthService {
@@ -70,17 +71,48 @@ export class AuthService {
     } as Accounts;
   }
 
-  async signAccount(account: Accounts): Promise<string> {
-    return this.jwtService.signAsync(
+  async signAccount(account: Accounts) {
+    const authToken = await this.jwtService.signAsync(
       {
+        phoneNumber: account.phone,
         email: account.email,
-        username: account.username,
         id: account._id,
       },
       {
         algorithm: 'HS256',
         secret: JWT_SECRET,
+        expiresIn: '1m',
       },
     );
+    const refreshToken = await this.jwtService.signAsync(
+      {
+        id: account._id,
+      },
+      {
+        algorithm: 'HS256',
+        secret: JWT_REFRESH_SECRET,
+        expiresIn: '60m',
+      },
+    );
+
+    return { authToken, refreshToken };
+  }
+
+  async verifyRefreshToken(refreshTokenDto: RefreshTokenDto) {
+    const data = await this.jwtService.verifyAsync(
+      refreshTokenDto.refreshToken,
+      {
+        secret: JWT_REFRESH_SECRET,
+      },
+    );
+
+    const account = await this.accountModel
+      .findById(data.id)
+      .select('-password');
+
+    return {
+      account,
+      ...(await this.signAccount(account)),
+    };
   }
 }

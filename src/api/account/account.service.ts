@@ -45,6 +45,6 @@ export class AccountService {
       }
     }
     await account.updateOne(body);
-    return await this.accountModel.findById(userId);
+    return await this.accountModel.findById(userId).select('-password');
   }
 }

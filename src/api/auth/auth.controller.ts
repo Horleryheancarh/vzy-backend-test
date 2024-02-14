@@ -6,6 +6,7 @@ import { AuthService } from './auth.service';
 import { AuthenticatedAccountDto } from './dtos/AuthenticatedAccountDto';
 import { LoginDto } from './dtos/LoginDto';
 import { RegisterDto } from './dtos/RegisterDto';
+import { RefreshTokenDto } from './dtos/RefreshTokenDto';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -21,7 +22,7 @@ export class AuthController {
 
     return new APIResponse<AuthenticatedAccountDto>({
       account: createdAccount,
-      token: await this.authService.signAccount(createdAccount),
+      ...(await this.authService.signAccount(createdAccount)),
     } as AuthenticatedAccountDto);
   }
 
@@ -35,7 +36,14 @@ export class AuthController {
 
     return new APIResponse<AuthenticatedAccountDto>({
       account: account,
-      token: await this.authService.signAccount(account),
+      ...(await this.authService.signAccount(account)),
     } as AuthenticatedAccountDto);
+  }
+
+  @Post('refresh_token')
+  @Public()
+  async refreshAuthToken(@Body() refreshTokenDto: RefreshTokenDto) {
+    // : Promise<APIResponse<AuthenticatedAccountDto>>
+    return await this.authService.verifyRefreshToken(refreshTokenDto);
   }
 }
